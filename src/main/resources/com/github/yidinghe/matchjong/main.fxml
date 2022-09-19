@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.BorderPane?>
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:id="root"
-            fx:controller="com.github.yidinghe.matchjong.controller.MainController">
+<?import javafx.scene.layout.HBox?>
+<HBox xmlns:fx="http://javafx.com/fxml"
+      fx:id="root" spacing="20"
+      fx:controller="com.github.yidinghe.matchjong.controller.MainController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
-</BorderPane>
+</HBox>
