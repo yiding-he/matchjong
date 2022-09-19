@@ -17,7 +17,7 @@ public class GameEditorBoard extends StackPane {
 
   private final double[] prefSize;
 
-  private final List<BoardLayer> boardLayers = new ArrayList<>();
+  private final List<EditorBoardLayer> boardLayers = new ArrayList<>();
 
   public GameEditorBoard(int cols, int rows) {
     this.rows = rows;
@@ -29,20 +29,20 @@ public class GameEditorBoard extends StackPane {
     this.setMaxSize(this.prefSize[0], this.prefSize[1]);
   }
 
-  public BoardLayer addLayer() {
+  public EditorBoardLayer addLayer(int layer) {
     var boardLayer = createBoardLayer(cols, rows);
-    boardLayer.setLayer(this.boardLayers.size());
+    boardLayer.setLayer(layer);
     this.boardLayers.add(boardLayer);
     this.getChildren().add(boardLayer);
     return boardLayer;
   }
 
-  public List<BoardLayer> getBoardLayers() {
+  public List<EditorBoardLayer> getBoardLayers() {
     return boardLayers;
   }
 
-  private BoardLayer createBoardLayer(int cols, int rows) {
-    var boardLayer = new BoardLayer(cols, rows);
+  private EditorBoardLayer createBoardLayer(int cols, int rows) {
+    var boardLayer = new EditorBoardLayer(cols, rows);
     var height = this.prefSize[1];
     boardLayer.layerProperty().addListener((observable, oldValue, newValue) -> {
       boardLayer.setLayoutX(0);
@@ -59,7 +59,7 @@ public class GameEditorBoard extends StackPane {
     return cols;
   }
 
-  public void removeLayer(BoardLayer boardLayer) {
+  public void removeLayer(EditorBoardLayer boardLayer) {
     this.boardLayers.remove(boardLayer);
     this.getChildren().remove(boardLayer);
     this.boardLayers.forEach(l -> {

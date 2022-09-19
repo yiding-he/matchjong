@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import static com.github.yidinghe.matchjong.editor.component.GameEditorBoard.CELL_HEIGHT;
 import static com.github.yidinghe.matchjong.editor.component.GameEditorBoard.CELL_WIDTH;
 
-public class BoardLayer extends StackPane {
+public class EditorBoardLayer extends StackPane {
 
   public static final Image TILE_IMAGE = new Image(
     GameEditorBoard.class.getResourceAsStream("/com/github/yidinghe/matchjong/tiles/7.png")
@@ -54,7 +54,7 @@ public class BoardLayer extends StackPane {
 
   private Consumer<EditorEvent.DeleteTile> onDeleteTile;
 
-  public BoardLayer(int cols, int rows) {
+  public EditorBoardLayer(int cols, int rows) {
     this.cols = cols;
     this.rows = rows;
     this.width = this.cols * CELL_WIDTH;
@@ -138,6 +138,18 @@ public class BoardLayer extends StackPane {
     this.active.set(active);
   }
 
+  public void enableBackground(boolean enable) {
+    this.background.setVisible(enable);
+  }
+
+  public void addTile(int colIndex, int rowIndex) {
+    var cellPosition = cellPosition(colIndex, rowIndex);
+    createTile(cellPosition);
+    if (this.onAddTile != null) {
+      this.onAddTile.accept(new EditorEvent.AddTile(cellPosition[0], cellPosition[1]));
+    }
+  }
+
   private Rectangle createIndicator() {
     var rectangle = new Rectangle();
     rectangle.setWidth(CELL_WIDTH * 2);
@@ -158,6 +170,13 @@ public class BoardLayer extends StackPane {
   private int[] cellPosition(MouseEvent e) {
     var colIndex = Math.min((int) e.getX() / CELL_WIDTH, this.cols - 2);
     var rowIndex = Math.min((int) e.getY() / CELL_HEIGHT, this.rows - 2);
+    return new int[]{
+      colIndex, rowIndex, colIndex * CELL_WIDTH, rowIndex * CELL_HEIGHT
+    };
+  }
+
+  // [colIndex, rowIndex, layoutX, layoutY]
+  private int[] cellPosition(int colIndex, int rowIndex) {
     return new int[]{
       colIndex, rowIndex, colIndex * CELL_WIDTH, rowIndex * CELL_HEIGHT
     };

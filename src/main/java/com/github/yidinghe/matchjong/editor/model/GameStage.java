@@ -5,7 +5,54 @@ import java.util.List;
 
 public class GameStage {
 
+  private int matchCount = 3;
+
+  private int queueSize = 8;
+
+  private final int cols;
+
+  private final int rows;
+
   private final List<GameStageLayer> stageLayers = new ArrayList<>();
+
+  //////////////////////////////////////////////
+
+  public GameStage(int cols, int rows) {
+    this.cols = cols;
+    this.rows = rows;
+  }
+
+  public int getCols() {
+    return cols;
+  }
+
+  public int getRows() {
+    return rows;
+  }
+
+  public List<GameStageLayer> getStageLayers() {
+    return stageLayers;
+  }
+
+  public int getMatchCount() {
+    return matchCount;
+  }
+
+  public void setMatchCount(int matchCount) {
+    this.matchCount = matchCount;
+  }
+
+  public int getQueueSize() {
+    return queueSize;
+  }
+
+  public void setQueueSize(int queueSize) {
+    this.queueSize = queueSize;
+  }
+
+  public void addLayer(int layer) {
+    this.stageLayers.add(new GameStageLayer(layer));
+  }
 
   public GameStageLayer getLayer(int layer) {
     return stageLayers.stream()
@@ -26,5 +73,21 @@ public class GameStage {
         l.setLayer(l.getLayer() - 1);
       }
     });
+  }
+
+  public String validate() {
+    if (stageLayers.isEmpty()) {
+      return "游戏至少要有一层layer，请点击“添加layer”";
+    }
+
+    if (tilesCount() % matchCount != 0) {
+      return "游戏至少要有" + matchCount + "倍数的块，现在有 " + tilesCount() + " 个块";
+    }
+
+    return null;
+  }
+
+  public int tilesCount() {
+    return stageLayers.stream().mapToInt(l -> l.getTiles().size()).sum();
   }
 }

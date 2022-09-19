@@ -1,6 +1,6 @@
 package com.github.yidinghe.matchjong.editor;
 
-import com.github.yidinghe.matchjong.editor.component.BoardLayer;
+import com.github.yidinghe.matchjong.editor.component.EditorBoardLayer;
 
 public class EditorEvent {
 
@@ -12,7 +12,7 @@ public class EditorEvent {
 
   }
 
-  public record DeleteLayer(BoardLayer layer) {
+  public record DeleteLayer(EditorBoardLayer layer) {
 
 
   }
