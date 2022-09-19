@@ -7,7 +7,7 @@ public class GameStage {
 
   private int matchCount = 3;
 
-  private int queueSize = 8;
+  private int bufferSize = 8;
 
   private final int cols;
 
@@ -42,12 +42,12 @@ public class GameStage {
     this.matchCount = matchCount;
   }
 
-  public int getQueueSize() {
-    return queueSize;
+  public int getBufferSize() {
+    return bufferSize;
   }
 
-  public void setQueueSize(int queueSize) {
-    this.queueSize = queueSize;
+  public void setBufferSize(int bufferSize) {
+    this.bufferSize = bufferSize;
   }
 
   public void addLayer(int layer) {
@@ -80,8 +80,13 @@ public class GameStage {
       return "游戏至少要有一层layer，请点击“添加layer”";
     }
 
-    if (tilesCount() % matchCount != 0) {
-      return "游戏至少要有" + matchCount + "倍数的块，现在有 " + tilesCount() + " 个块";
+    var tilesCount = tilesCount();
+    if (tilesCount == 0 || tilesCount % matchCount != 0) {
+      return "游戏至少要有" + matchCount + "倍数的块，现在有 " + tilesCount + " 个块";
+    }
+
+    if (bufferSize < matchCount) {
+      return "缓冲区域大小不能小于消除个数";
     }
 
     return null;

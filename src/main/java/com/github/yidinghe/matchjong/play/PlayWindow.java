@@ -17,6 +17,8 @@ public class PlayWindow extends Stage {
     this.initModality(Modality.APPLICATION_MODAL);
     this.setScene(new Scene(root()));
     this.show();
+    System.out.println("开始一局，共 " + gameStage.tilesCount() + " 个块，每 " +
+      gameStage.getMatchCount() + " 个相同块消除，缓冲区域可放置 " + gameStage.getBufferSize() + " 个块。");
   }
 
   private BorderPane root() {

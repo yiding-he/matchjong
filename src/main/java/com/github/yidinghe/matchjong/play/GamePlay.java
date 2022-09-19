@@ -8,7 +8,6 @@ import javafx.scene.image.Image;
 
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class GamePlay {
 
@@ -28,18 +27,29 @@ public class GamePlay {
   }
 
   public void fillTiles(GamePlayBoard gamePlayBoard) {
-    var boardLayers = new ArrayList<>(gamePlayBoard.getBoardLayers());
-    boardLayers.sort(Comparator.comparing(EditorBoardLayer::getLayer));
-
     var indexes = new ArrayList<Integer>(this.tileImages.size());
     for (int i = 0; i < this.tileImages.size(); i++) {
       indexes.add(i);
     }
     Collections.shuffle(indexes);
 
-    var counter = new AtomicInteger();
-    var index = new AtomicInteger();
+    var tilesCount = this.gameStage.tilesCount();
+    var queue = new ArrayList<Integer>(tilesCount);
+    int tilePointer = 0;
+    while (queue.size() < tilesCount) {
+      for (int i = 0; i < gameStage.getMatchCount(); i++) {
+        queue.add(indexes.get(tilePointer));
+      }
+      tilePointer+=1;
+      if (tilePointer == indexes.size() - 1) {
+        Collections.shuffle(indexes);
+        tilePointer = 0;
+      }
+    }
+    var answer = new ArrayList<>(queue.size());
 
+    var boardLayers = new ArrayList<>(gamePlayBoard.getBoardLayers());
+    boardLayers.sort(Comparator.comparing(EditorBoardLayer::getLayer));
     this.gameStage.getStageLayers().stream()
       .sorted(Comparator.comparing(GameStageLayer::getLayer))
       .flatMap(layer -> {
@@ -47,19 +57,18 @@ public class GamePlay {
         Collections.shuffle(tiles);
         return tiles.stream();
       }).forEach(stageTile -> {
-        if (counter.getAndIncrement() % this.gameStage.getMatchCount() == 0) {
-          if (index.incrementAndGet() >= indexes.size()) {
-            index.set(0);
-          }
-        }
-        var value = indexes.get(index.get());
+        var pick = RANDOM.nextInt(Math.min(queue.size(), gameStage.getBufferSize()));
+        var value = queue.remove(pick);
         var tile = new Tile(
           value, stageTile.getLayer(),
           stageTile.getColIndex(), stageTile.getRowIndex(),
           this.tileImages.get(value)
         );
-        System.out.println(value);
+        answer.add(value);
         boardLayers.get(stageTile.getLayer()).addTile(tile);
       });
+
+    Collections.reverse(answer);
+    System.out.println("解法步骤: " + answer);
   }
 }

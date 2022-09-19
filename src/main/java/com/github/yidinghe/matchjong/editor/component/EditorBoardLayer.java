@@ -1,6 +1,5 @@
 package com.github.yidinghe.matchjong.editor.component;
 
-import com.github.yidinghe.matchjong.TileImages;
 import com.github.yidinghe.matchjong.editor.EditorEvent;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -8,7 +7,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -24,8 +22,6 @@ import static com.github.yidinghe.matchjong.editor.component.GameEditorBoard.CEL
 import static com.github.yidinghe.matchjong.editor.component.GameEditorBoard.CELL_WIDTH;
 
 public class EditorBoardLayer extends StackPane {
-
-  public static final Image TILE_IMAGE = TileImages.getTileImages().get(0);
 
   public static final Color INDICATOR_INVALID = Color.web("#FF3333");
 
@@ -204,10 +200,10 @@ public class EditorBoardLayer extends StackPane {
       findTiles(cellPosition[0], cellPosition[1]).forEach(t -> {
         this.tiles.remove(t);
         this.getChildren().remove(t);
+        if (this.onDeleteTile != null) {
+          this.onDeleteTile.accept(new EditorEvent.DeleteTile(t.getColIndex(), t.getRowIndex()));
+        }
       });
-      if (this.onDeleteTile != null) {
-        this.onDeleteTile.accept(new EditorEvent.DeleteTile(cellPosition[0], cellPosition[1]));
-      }
     }
 
     e.consume();
@@ -227,7 +223,7 @@ public class EditorBoardLayer extends StackPane {
   }
 
   private void createTile(int layer, int[] cellPosition) {
-    Tile tile = new Tile(-1, layer, cellPosition[0], cellPosition[1], TILE_IMAGE, Tile.BORDER_COLOR);
+    Tile tile = new Tile(-1, layer, cellPosition[0], cellPosition[1], null, Tile.BORDER_COLOR);
     addTile(tile);
   }
 

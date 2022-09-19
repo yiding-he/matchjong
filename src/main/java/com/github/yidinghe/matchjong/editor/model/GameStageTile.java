@@ -33,4 +33,13 @@ public class GameStageTile {
   public void setRowIndex(int rowIndex) {
     this.rowIndex = rowIndex;
   }
+
+  @Override
+  public String toString() {
+    return "Tile{" +
+      "layer=" + layer +
+      ", colIndex=" + colIndex +
+      ", rowIndex=" + rowIndex +
+      '}';
+  }
 }
