@@ -1,5 +1,6 @@
 package com.github.yidinghe.matchjong.editor.component;
 
+import com.github.yidinghe.matchjong.TileImages;
 import com.github.yidinghe.matchjong.editor.EditorEvent;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -24,9 +25,7 @@ import static com.github.yidinghe.matchjong.editor.component.GameEditorBoard.CEL
 
 public class EditorBoardLayer extends StackPane {
 
-  public static final Image TILE_IMAGE = new Image(
-    GameEditorBoard.class.getResourceAsStream("/com/github/yidinghe/matchjong/tiles/7.png")
-  );
+  public static final Image TILE_IMAGE = TileImages.getTileImages().get(0);
 
   public static final Color INDICATOR_INVALID = Color.web("#FF3333");
 
@@ -142,14 +141,6 @@ public class EditorBoardLayer extends StackPane {
     this.background.setVisible(enable);
   }
 
-  public void addTile(int colIndex, int rowIndex) {
-    var cellPosition = cellPosition(colIndex, rowIndex);
-    createTile(cellPosition);
-    if (this.onAddTile != null) {
-      this.onAddTile.accept(new EditorEvent.AddTile(cellPosition[0], cellPosition[1]));
-    }
-  }
-
   private Rectangle createIndicator() {
     var rectangle = new Rectangle();
     rectangle.setWidth(CELL_WIDTH * 2);
@@ -208,10 +199,7 @@ public class EditorBoardLayer extends StackPane {
 
     var cellPosition = cellPosition(e);
     if (e.getButton() == MouseButton.PRIMARY && !hasOverlap(cellPosition[0], cellPosition[1])) {  // add tile
-      createTile(cellPosition);
-      if (this.onAddTile != null) {
-        this.onAddTile.accept(new EditorEvent.AddTile(cellPosition[0], cellPosition[1]));
-      }
+      createTile(getLayer(), cellPosition);
     } else if (e.getButton() == MouseButton.SECONDARY) {  // delete tile
       findTiles(cellPosition[0], cellPosition[1]).forEach(t -> {
         this.tiles.remove(t);
@@ -225,13 +213,22 @@ public class EditorBoardLayer extends StackPane {
     e.consume();
   }
 
-  private void createTile(int[] cellPosition) {
-    Tile tile = new Tile(cellPosition[0], cellPosition[1], TILE_IMAGE, Tile.BORDER_COLOR);
+  public void addTile(Tile tile) {
+    var cellPosition = cellPosition(tile.getColIndex(), tile.getRowIndex());
     tile.setManaged(false);
     tile.setLayoutX(cellPosition[2]);
     tile.setLayoutY(cellPosition[3]);
     this.getChildren().add(tile);
     this.tiles.add(tile);
+
+    if (this.onAddTile != null) {
+      this.onAddTile.accept(new EditorEvent.AddTile(cellPosition[0], cellPosition[1]));
+    }
+  }
+
+  private void createTile(int layer, int[] cellPosition) {
+    Tile tile = new Tile(-1, layer, cellPosition[0], cellPosition[1], TILE_IMAGE, Tile.BORDER_COLOR);
+    addTile(tile);
   }
 
   private List<Tile> findTiles(int colIndex, int rowIndex) {

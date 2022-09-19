@@ -59,13 +59,15 @@ public class GameEditorBoard extends StackPane {
     return cols;
   }
 
-  public void removeLayer(EditorBoardLayer boardLayer) {
-    this.boardLayers.remove(boardLayer);
-    this.getChildren().remove(boardLayer);
+  public void removeLayer(int layer) {
+    this.boardLayers.removeIf(l -> l.getLayer() == layer);
+    this.getChildren().removeIf(l -> l instanceof EditorBoardLayer && ((EditorBoardLayer)l).getLayer() == layer);
     this.boardLayers.forEach(l -> {
-      if (l.getLayer() > boardLayer.getLayer()) {
+      if (l.getLayer() > layer) {
         l.setLayer(l.getLayer() - 1);
       }
     });
+
+    System.out.println(this.boardLayers);
   }
 }

@@ -36,10 +36,10 @@ public class MainController {
     var btnAddLayer = new Button("添加Layer");
     var btnDeleteLayer = new Button("删除Layer");
     var hbButtons = new HBox(10, btnAddLayer, btnDeleteLayer);
-    var tile = new Tile(-1, -1, EditorBoardLayer.TILE_IMAGE, Tile.BORDER_COLOR);
+    var sampleTile = new Tile(-1, -1, -1, -1, EditorBoardLayer.TILE_IMAGE, Tile.BORDER_COLOR);
     var btnPlay = new Button("开始玩");
 
-    var vBox = new VBox(10, hbButtons, lvLayers, tile, btnPlay);
+    var vBox = new VBox(10, hbButtons, lvLayers, sampleTile, btnPlay);
 
     hbButtons.setAlignment(Pos.BASELINE_LEFT);
     btnAddLayer.setOnAction(e -> {
@@ -59,8 +59,9 @@ public class MainController {
         return;
       }
 
-      this.editorBoard.removeLayer(boardLayer);
-      this.gameStage.removeLayer(boardLayer.getLayer());
+      var layerNum = boardLayer.getLayer();
+      this.gameStage.removeLayer(layerNum);
+      this.editorBoard.removeLayer(layerNum);
       lvLayers.getItems().remove(boardLayer);
     });
 

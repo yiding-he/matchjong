@@ -26,7 +26,7 @@ public class GameStageLayer {
   }
 
   public void addTile(int colIndex, int rowIndex) {
-    this.tiles.add(new GameStageTile(colIndex, rowIndex));
+    this.tiles.add(new GameStageTile(layer, colIndex, rowIndex));
   }
 
   public void deleteTile(int colIndex, int rowIndex) {

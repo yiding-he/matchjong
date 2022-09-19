@@ -1,6 +1,8 @@
 package com.github.yidinghe.matchjong.play;
 
+import com.github.yidinghe.matchjong.TileImages;
 import com.github.yidinghe.matchjong.editor.model.GameStage;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
@@ -8,10 +10,10 @@ import javafx.stage.Stage;
 
 public class PlayWindow extends Stage {
 
-  private GameStage gameStage;
+  private GamePlay gamePlay;
 
   public void start(GameStage gameStage) {
-    this.gameStage = gameStage;
+    this.gamePlay = new GamePlay(gameStage, TileImages.getTileImages());
     this.initModality(Modality.APPLICATION_MODAL);
     this.setScene(new Scene(root()));
     this.show();
@@ -21,19 +23,19 @@ public class PlayWindow extends Stage {
     var borderPane = new BorderPane();
     borderPane.setCenter(createGameBoard());
     borderPane.autosize();
+    borderPane.setPadding(new Insets(10));
     return borderPane;
   }
 
   private GamePlayBoard createGameBoard() {
-    var gamePlayBoard = new GamePlayBoard(this.gameStage.getCols(), this.gameStage.getRows());
-    this.gameStage.getStageLayers().forEach(stageLayer -> {
+    var gameStage = this.gamePlay.getGameStage();
+    var gamePlayBoard = new GamePlayBoard(gameStage.getCols(), gameStage.getRows());
+    gameStage.getStageLayers().forEach(stageLayer -> {
       var boardLayer = gamePlayBoard.addLayer(stageLayer.getLayer());
-      stageLayer.getTiles().forEach(stageTile -> {
-        boardLayer.addTile(stageTile.getColIndex(), stageTile.getRowIndex());
-      });
       boardLayer.setOpacity(1);
       boardLayer.enableBackground(false);
     });
+    this.gamePlay.fillTiles(gamePlayBoard);
     return gamePlayBoard;
   }
 }
