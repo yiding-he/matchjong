@@ -32,7 +32,8 @@ public class MainController {
     var btnAddLayer = new Button("添加Layer");
     var btnDeleteLayer = new Button("删除Layer");
     var hbButtons = new HBox(10, btnAddLayer, btnDeleteLayer);
-    var vBox = new VBox(10, hbButtons, lvLayers, new Tile(-1, -1, BoardLayer.TILE_IMAGE));
+    var tile = new Tile(-1, -1, BoardLayer.TILE_IMAGE, Tile.BORDER_COLOR);
+    var vBox = new VBox(10, hbButtons, lvLayers, tile);
 
     hbButtons.setAlignment(Pos.BASELINE_LEFT);
     btnAddLayer.setOnAction(e -> {
@@ -43,6 +44,17 @@ public class MainController {
       boardLayer.setOnAddTile(event -> gameStage.getLayer(boardLayer.getLayer()).addTile(event.colIndex(), event.rowIndex()));
       boardLayer.setOnDeleteTile(event -> gameStage.getLayer(boardLayer.getLayer()).deleteTile(event.colIndex(), event.rowIndex()));
       lvLayers.getItems().add(0, boardLayer);
+    });
+
+    btnDeleteLayer.setOnAction(e -> {
+      var boardLayer = lvLayers.getSelectionModel().getSelectedItem();
+      if (boardLayer == null) {
+        return;
+      }
+
+      this.editorBoard.removeLayer(boardLayer);
+      this.gameStage.removeLayer(boardLayer.getLayer());
+      lvLayers.getItems().remove(boardLayer);
     });
 
     lvLayers.setCellFactory(lv -> new ListCell<>() {
@@ -60,6 +72,8 @@ public class MainController {
     lvLayers.getSelectionModel().selectedItemProperty().addListener(
       (observable, oldValue, newValue) -> lvLayers.getItems().forEach(boardLayer -> boardLayer.setActive(boardLayer == newValue))
     );
+
+    lvLayers.setPrefHeight(120);
 
     return vBox;
   }

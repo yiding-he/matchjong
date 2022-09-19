@@ -18,4 +18,13 @@ public class GameStage {
         }
       );
   }
+
+  public void removeLayer(int layer) {
+    this.stageLayers.removeIf(l -> l.getLayer() == layer);
+    this.stageLayers.forEach(l -> {
+      if (l.getLayer() > layer) {
+        l.setLayer(l.getLayer() - 1);
+      }
+    });
+  }
 }

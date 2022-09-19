@@ -28,6 +28,10 @@ public class BoardLayer extends StackPane {
     GameEditorBoard.class.getResourceAsStream("/com/github/yidinghe/matchjong/tiles/7.png")
   );
 
+  public static final Color INDICATOR_INVALID = Color.web("#FF3333");
+
+  public static final Color INDICATOR_VALID = Color.web("#4499AA");
+
   private final int cols;
 
   private final int rows;
@@ -138,7 +142,7 @@ public class BoardLayer extends StackPane {
     var rectangle = new Rectangle();
     rectangle.setWidth(CELL_WIDTH * 2);
     rectangle.setHeight(CELL_HEIGHT * 2);
-    rectangle.setStroke(Color.web("#4499AA"));
+    rectangle.setStroke(INDICATOR_VALID);
     rectangle.setStrokeWidth(1);
     rectangle.setVisible(false);
     rectangle.setFill(Color.TRANSPARENT);
@@ -167,6 +171,14 @@ public class BoardLayer extends StackPane {
     indicator.setLayoutX(cellPosition[2]);
     indicator.setLayoutY(cellPosition[3]);
     indicator.setVisible(true);
+    indicator.toFront();
+
+    if (hasOverlap(cellPosition[0], cellPosition[1])) {
+      indicator.setStroke(INDICATOR_INVALID);
+    } else {
+      indicator.setStroke(INDICATOR_VALID);
+    }
+
     e.consume();
   }
 
@@ -176,7 +188,7 @@ public class BoardLayer extends StackPane {
     }
 
     var cellPosition = cellPosition(e);
-    if (e.getButton() == MouseButton.PRIMARY) {  // add tile
+    if (e.getButton() == MouseButton.PRIMARY && !hasOverlap(cellPosition[0], cellPosition[1])) {  // add tile
       createTile(cellPosition);
       if (this.onAddTile != null) {
         this.onAddTile.accept(new EditorEvent.AddTile(cellPosition[0], cellPosition[1]));
@@ -195,7 +207,7 @@ public class BoardLayer extends StackPane {
   }
 
   private void createTile(int[] cellPosition) {
-    Tile tile = new Tile(cellPosition[0], cellPosition[1], TILE_IMAGE);
+    Tile tile = new Tile(cellPosition[0], cellPosition[1], TILE_IMAGE, Tile.BORDER_COLOR);
     tile.setManaged(false);
     tile.setLayoutX(cellPosition[2]);
     tile.setLayoutY(cellPosition[3]);
@@ -205,5 +217,9 @@ public class BoardLayer extends StackPane {
 
   private List<Tile> findTiles(int colIndex, int rowIndex) {
     return this.tiles.stream().filter(t -> t.covers(colIndex, rowIndex)).collect(Collectors.toList());
+  }
+
+  private boolean hasOverlap(int colIndex, int rowIndex) {
+    return this.tiles.stream().anyMatch(t -> t.overlaps(colIndex, rowIndex));
   }
 }

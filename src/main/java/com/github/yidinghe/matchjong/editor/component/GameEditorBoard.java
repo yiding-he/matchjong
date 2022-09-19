@@ -46,7 +46,7 @@ public class GameEditorBoard extends StackPane {
     var height = this.prefSize[1];
     boardLayer.layerProperty().addListener((observable, oldValue, newValue) -> {
       boardLayer.setLayoutX(0);
-      boardLayer.setLayoutY((height - boardLayer.getHeight()) + (newValue.intValue() * -3));
+      boardLayer.setLayoutY((height - boardLayer.getHeight()) + (newValue.intValue() * -5));
     });
     return boardLayer;
   }
@@ -59,4 +59,13 @@ public class GameEditorBoard extends StackPane {
     return cols;
   }
 
+  public void removeLayer(BoardLayer boardLayer) {
+    this.boardLayers.remove(boardLayer);
+    this.getChildren().remove(boardLayer);
+    this.boardLayers.forEach(l -> {
+      if (l.getLayer() > boardLayer.getLayer()) {
+        l.setLayer(l.getLayer() - 1);
+      }
+    });
+  }
 }

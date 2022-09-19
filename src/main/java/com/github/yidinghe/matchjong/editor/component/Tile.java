@@ -6,11 +6,13 @@ import javafx.scene.paint.Color;
 
 public class Tile extends Canvas {
 
+  public static final Color BORDER_COLOR = Color.web("#66AAFF");
+
   private final int colIndex;
 
   private final int rowIndex;
 
-  public Tile(int colIndex, int rowIndex, Image image) {
+  public Tile(int colIndex, int rowIndex, Image image, Color borderColor) {
     this.colIndex = colIndex;
     this.rowIndex = rowIndex;
     var tileWidth = GameEditorBoard.CELL_WIDTH * 2;
@@ -25,11 +27,14 @@ public class Tile extends Canvas {
     var imgPos = new double[]{(tileWidth - imgSize[0]) / 2.0, (tileHeight - imgSize[1]) / 2.0};
 
     var context = getGraphicsContext2D();
+    context.setFill(borderColor);
+    context.fillRoundRect(0, 0, tileWidth, tileHeight, 10, 10);
+
+    context.setFill(Color.WHITE);
+    context.fillRoundRect(1, 1, tileWidth - 2, tileHeight - 5, 10, 10);
+
     context.setImageSmoothing(true);
-    context.drawImage(image, imgPos[0], imgPos[1], imgSize[0], imgSize[1]);
-    context.setStroke(Color.ROYALBLUE);
-    context.setLineWidth(2);
-    context.strokeRect(0, 0, tileWidth, tileHeight);
+    context.drawImage(image, imgPos[0], imgPos[1] - 2, imgSize[0], imgSize[1]);
   }
 
   public int getColIndex() {
@@ -43,5 +48,10 @@ public class Tile extends Canvas {
   public boolean covers(int colIndex, int rowIndex) {
     return (this.colIndex == colIndex || this.colIndex + 1 == colIndex) &&
       (this.rowIndex == rowIndex || this.rowIndex + 1 == rowIndex);
+  }
+
+  public boolean overlaps(int colIndex, int rowIndex) {
+    return colIndex >= this.colIndex - 1 && colIndex <= this.colIndex + 1 &&
+      rowIndex >= this.rowIndex - 1 && rowIndex <= this.rowIndex + 1;
   }
 }
