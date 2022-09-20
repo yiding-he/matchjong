@@ -71,4 +71,20 @@ public class GamePlay {
     Collections.reverse(answer);
     System.out.println("解法步骤: " + answer);
   }
+
+  public void initTileStatus(GamePlayBoard gamePlayBoard) {
+    var boardLayers = new ArrayList<>(gamePlayBoard.getBoardLayers());
+    boardLayers.sort(Comparator.comparing(EditorBoardLayer::getLayer));
+    var topLayer = boardLayers.get(boardLayers.size() - 1).getLayer();
+    boardLayers.forEach(layer -> {
+      layer.getTiles().forEach(t -> {
+        if (t.getLayer() == topLayer) {
+          t.setActive(true);
+        } else {
+          var upperLayer = boardLayers.get(t.getLayer() + 1);
+          t.setActive(!upperLayer.hasOverlap(t.getColIndex(), t.getRowIndex()));
+        }
+      });
+    });
+  }
 }

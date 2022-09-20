@@ -7,7 +7,10 @@ public class GameStageLayer {
 
   private int layer;
 
-  private final List<GameStageTile> tiles = new ArrayList<>();
+  private List<GameStageTile> tiles = new ArrayList<>();
+
+  public GameStageLayer() {
+  }
 
   public GameStageLayer(int layer) {
     this.layer = layer;
@@ -23,6 +26,10 @@ public class GameStageLayer {
 
   public List<GameStageTile> getTiles() {
     return tiles;
+  }
+
+  public void setTiles(List<GameStageTile> tiles) {
+    this.tiles = tiles;
   }
 
   public void addTile(int colIndex, int rowIndex) {

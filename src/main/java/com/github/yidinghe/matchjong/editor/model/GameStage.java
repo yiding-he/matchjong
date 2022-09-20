@@ -5,19 +5,24 @@ import java.util.List;
 
 public class GameStage {
 
+  private int cols;
+
+  private int rows;
+
+  private List<GameStageLayer> stageLayers = new ArrayList<>();
+
+  private List<String> tileImages = new ArrayList<>();
+
   private int matchCount = 3;
 
   private int bufferSize = 8;
 
-  private final int cols;
-
-  private final int rows;
-
-  private final List<GameStageLayer> stageLayers = new ArrayList<>();
-
-  private final List<String> tileImages = new ArrayList<>();
+  private boolean readOnly;
 
   //////////////////////////////////////////////
+
+  public GameStage() {
+  }
 
   public GameStage(int cols, int rows) {
     this.cols = cols;
@@ -26,6 +31,14 @@ public class GameStage {
 
   public List<String> getTileImages() {
     return tileImages;
+  }
+
+  public boolean isReadOnly() {
+    return readOnly;
+  }
+
+  public void setReadOnly(boolean readOnly) {
+    this.readOnly = readOnly;
   }
 
   public int getCols() {
@@ -38,6 +51,22 @@ public class GameStage {
 
   public List<GameStageLayer> getStageLayers() {
     return stageLayers;
+  }
+
+  public void setCols(int cols) {
+    this.cols = cols;
+  }
+
+  public void setRows(int rows) {
+    this.rows = rows;
+  }
+
+  public void setStageLayers(List<GameStageLayer> stageLayers) {
+    this.stageLayers = stageLayers;
+  }
+
+  public void setTileImages(List<String> tileImages) {
+    this.tileImages = tileImages;
   }
 
   public int getMatchCount() {

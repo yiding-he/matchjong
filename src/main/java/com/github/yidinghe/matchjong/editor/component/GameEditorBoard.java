@@ -1,8 +1,11 @@
 package com.github.yidinghe.matchjong.editor.component;
 
+import com.github.yidinghe.matchjong.editor.model.GameStage;
+import com.github.yidinghe.matchjong.editor.model.GameStageLayer;
 import javafx.scene.layout.StackPane;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class GameEditorBoard extends StackPane {
@@ -69,5 +72,23 @@ public class GameEditorBoard extends StackPane {
     });
 
     System.out.println(this.boardLayers);
+  }
+
+  public void loadGameStage(GameStage gameStage) {
+    this.boardLayers.clear();
+    this.getChildren().removeIf(c -> c instanceof EditorBoardLayer);
+
+    var boardLayers = new ArrayList<>(gameStage.getStageLayers());
+    boardLayers.sort(Comparator.comparing(GameStageLayer::getLayer));
+
+    boardLayers.forEach(bl -> {
+      var eLayer = addLayer(bl.getLayer());
+      bl.getTiles().forEach(bt -> {
+        var tile = new Tile(-1, bl.getLayer(), bt.getColIndex(), bt.getRowIndex(), null);
+        tile.setActive(true);
+        eLayer.addTile(tile);
+      });
+      eLayer.setActive(true);
+    });
   }
 }

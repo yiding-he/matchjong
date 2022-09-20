@@ -8,10 +8,17 @@ public class GameStageTile {
 
   private int rowIndex;
 
+  public GameStageTile() {
+  }
+
   public GameStageTile(int layer, int colIndex, int rowIndex) {
     this.layer = layer;
     this.colIndex = colIndex;
     this.rowIndex = rowIndex;
+  }
+
+  public void setLayer(int layer) {
+    this.layer = layer;
   }
 
   public int getLayer() {

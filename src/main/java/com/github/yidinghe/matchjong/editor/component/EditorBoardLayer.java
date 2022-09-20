@@ -1,6 +1,8 @@
 package com.github.yidinghe.matchjong.editor.component;
 
-import com.github.yidinghe.matchjong.editor.EditorEvent;
+import com.github.yidinghe.matchjong.editor.events.AddTileEvent;
+import com.github.yidinghe.matchjong.editor.events.DeleteTileEvent;
+import com.github.yidinghe.matchjong.util.EventBus;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -15,7 +17,6 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.github.yidinghe.matchjong.editor.component.GameEditorBoard.CELL_HEIGHT;
@@ -44,10 +45,6 @@ public class EditorBoardLayer extends StackPane {
   private final BooleanProperty active = new SimpleBooleanProperty(false);
 
   private final List<Tile> tiles = new ArrayList<>();
-
-  private Consumer<EditorEvent.AddTile> onAddTile;
-
-  private Consumer<EditorEvent.DeleteTile> onDeleteTile;
 
   public EditorBoardLayer(int cols, int rows) {
     this.cols = cols;
@@ -99,14 +96,6 @@ public class EditorBoardLayer extends StackPane {
     line(c, 0, height - 1, width - 1, height - 1);
     line(c, width - 1, 0, width - 1, height - 1);
     return canvas;
-  }
-
-  public void setOnAddTile(Consumer<EditorEvent.AddTile> onAddTile) {
-    this.onAddTile = onAddTile;
-  }
-
-  public void setOnDeleteTile(Consumer<EditorEvent.DeleteTile> onDeleteTile) {
-    this.onDeleteTile = onDeleteTile;
   }
 
   public int getLayer() {
@@ -200,16 +189,16 @@ public class EditorBoardLayer extends StackPane {
     if (e.getButton() == MouseButton.PRIMARY && !hasOverlap(cellPosition[0], cellPosition[1])) {  // add tile
       createTile(getLayer(), cellPosition);
     } else if (e.getButton() == MouseButton.SECONDARY) {  // delete tile
-      findTiles(cellPosition[0], cellPosition[1]).forEach(t -> {
-        this.tiles.remove(t);
-        this.getChildren().remove(t);
-        if (this.onDeleteTile != null) {
-          this.onDeleteTile.accept(new EditorEvent.DeleteTile(t.getColIndex(), t.getRowIndex()));
-        }
-      });
+      findTiles(cellPosition[0], cellPosition[1]).forEach(this::removeTile);
     }
 
     e.consume();
+  }
+
+  private void removeTile(Tile t) {
+    this.tiles.remove(t);
+    this.getChildren().remove(t);
+    EventBus.fire(new DeleteTileEvent(t));
   }
 
   public void addTile(Tile tile) {
@@ -219,22 +208,24 @@ public class EditorBoardLayer extends StackPane {
     tile.setLayoutY(cellPosition[3]);
     this.getChildren().add(tile);
     this.tiles.add(tile);
-
-    if (this.onAddTile != null) {
-      this.onAddTile.accept(new EditorEvent.AddTile(cellPosition[0], cellPosition[1]));
-    }
+    EventBus.fire(new AddTileEvent(tile));
   }
 
   private void createTile(int layer, int[] cellPosition) {
     Tile tile = new Tile(-1, layer, cellPosition[0], cellPosition[1], null, Tile.BORDER_COLOR);
+    tile.setActive(true);
     addTile(tile);
+  }
+
+  public List<Tile> getTiles() {
+    return tiles;
   }
 
   private List<Tile> findTiles(int colIndex, int rowIndex) {
     return this.tiles.stream().filter(t -> t.covers(colIndex, rowIndex)).collect(Collectors.toList());
   }
 
-  private boolean hasOverlap(int colIndex, int rowIndex) {
+  public boolean hasOverlap(int colIndex, int rowIndex) {
     return this.tiles.stream().anyMatch(t -> t.overlaps(colIndex, rowIndex));
   }
 }
