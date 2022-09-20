@@ -131,6 +131,9 @@ public class EditorBoardLayer extends StackPane {
 
   public void setActive(boolean active) {
     this.active.set(active);
+    if (active) {
+      this.toFront();
+    }
   }
 
   public void enableBackground(boolean enable) {

@@ -1,6 +1,6 @@
 package com.github.yidinghe.matchjong;
 
-import javafx.scene.image.Image;
+import com.github.yidinghe.matchjong.editor.model.GameTileImage;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
 
 public class TileImages {
 
-  private static List<Image> tileImages;
+  private static List<GameTileImage> tileImages;
 
   public static void load(String path) {
     try (var list = Files.list(Path.of(path))) {
       tileImages = list.map(p -> {
         try {
-          return new Image(Files.newInputStream(p));
+          return GameTileImage.create(Files.newInputStream(p));
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
@@ -26,7 +26,7 @@ public class TileImages {
     }
   }
 
-  public static List<Image> getTileImages() {
+  public static List<GameTileImage> getTileImages() {
     return tileImages;
   }
 }

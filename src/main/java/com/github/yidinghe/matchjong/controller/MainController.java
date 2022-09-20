@@ -2,9 +2,11 @@ package com.github.yidinghe.matchjong.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yidinghe.matchjong.FxApp;
+import com.github.yidinghe.matchjong.TileImages;
 import com.github.yidinghe.matchjong.editor.component.EditorBoardLayer;
 import com.github.yidinghe.matchjong.editor.component.GameEditorBoard;
 import com.github.yidinghe.matchjong.editor.model.GameStage;
+import com.github.yidinghe.matchjong.editor.model.GameTileImage;
 import com.github.yidinghe.matchjong.play.PlayWindow;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -17,6 +19,7 @@ import javafx.stage.FileChooser;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Objects;
 
 public class MainController {
 
@@ -79,22 +82,10 @@ public class MainController {
     btnDeleteLayer.setOnAction(e -> doDeleteLayer(lvLayers, lblTilesCount));
 
     hbSaveLoad.setAlignment(Pos.BASELINE_LEFT);
-    btnSave.setOnAction(e -> {
-      prepareGameStage();
-      if (!validateGameStage()) {
-        return;
-      }
-      var fileChooser = new FileChooser();
-      fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON file", "*.json"));
-      var file = fileChooser.showSaveDialog(FxApp.primaryWindow);
-      if (file != null) {
-        try {
-          Files.writeString(file.toPath(), OBJECT_MAPPER.writeValueAsString(gameStage));
-          new Alert(Alert.AlertType.INFORMATION, "保存完毕", ButtonType.OK).showAndWait();
-        } catch (IOException ex) {
-          throw new RuntimeException(ex);
-        }
-      }
+    btnSave.setOnAction(e -> saveGameStage());
+    btnLoad.setOnAction(e -> {
+      var fileChooser = initFileChooser();
+      fileChooser.showOpenDialog(FxApp.primaryWindow);
     });
 
     initLvLayers(lvLayers);
@@ -104,6 +95,29 @@ public class MainController {
     lvLayers.setPrefHeight(120);
 
     return vBox;
+  }
+
+  private void saveGameStage() {
+    prepareGameStage();
+    if (!validateGameStage()) {
+      return;
+    }
+    var fileChooser = initFileChooser();
+    var file = fileChooser.showSaveDialog(FxApp.primaryWindow);
+    if (file != null) {
+      try {
+        Files.writeString(file.toPath(), OBJECT_MAPPER.writeValueAsString(gameStage));
+        new Alert(Alert.AlertType.INFORMATION, "保存完毕", ButtonType.OK).showAndWait();
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+    }
+  }
+
+  private static FileChooser initFileChooser() {
+    var fileChooser = new FileChooser();
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON file", "*.json"));
+    return fileChooser;
   }
 
   private static void initLvLayers(ListView<EditorBoardLayer> lvLayers) {
@@ -151,10 +165,11 @@ public class MainController {
       lblTilesCount.setText(TILES_COUNT_PREFIX + gameStage.tilesCount());
     });
     this.gameStage.addLayer(boardLayer.getLayer());
+
+    var prevSelected = lvLayers.getSelectionModel().getSelectedItem();
     lvLayers.getItems().add(0, boardLayer);
-    if (lvLayers.getItems().size() == 1) {
-      lvLayers.getSelectionModel().select(0);
-    }
+    lvLayers.getSelectionModel().select(Objects.requireNonNullElse(prevSelected, boardLayer));
+    lvLayers.getSelectionModel().getSelectedItem().setActive(true);
   }
 
   private void play() {
@@ -181,5 +196,8 @@ public class MainController {
   private void prepareGameStage() {
     gameStage.setMatchCount(spMatchCount.getValue());
     gameStage.setBufferSize(spBufferSize.getValue());
+
+    gameStage.getTileImages().clear();
+    gameStage.getTileImages().addAll(TileImages.getTileImages().stream().map(GameTileImage::rawDataBase64).toList());
   }
 }

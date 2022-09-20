@@ -15,11 +15,17 @@ public class GameStage {
 
   private final List<GameStageLayer> stageLayers = new ArrayList<>();
 
+  private final List<String> tileImages = new ArrayList<>();
+
   //////////////////////////////////////////////
 
   public GameStage(int cols, int rows) {
     this.cols = cols;
     this.rows = rows;
+  }
+
+  public List<String> getTileImages() {
+    return tileImages;
   }
 
   public int getCols() {
