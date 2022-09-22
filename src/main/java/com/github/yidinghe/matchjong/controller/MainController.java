@@ -13,10 +13,7 @@ import com.github.yidinghe.matchjong.play.PlayWindow;
 import com.github.yidinghe.matchjong.util.EventBus;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 
@@ -52,8 +49,11 @@ public class MainController {
     initGameStage(cols, rows);
     initEditorBoard(cols, rows);
 
+    var gameEditorGround = new ScrollPane(gameEditorBoard);
+    HBox.setHgrow(gameEditorGround, Priority.ALWAYS);
+
     this.root.setBackground(new Background(new BackgroundFill(Color.web("#EEEEEE"), null, null)));
-    this.root.getChildren().addAll(createControlPane(), gameEditorBoard);
+    this.root.getChildren().addAll(createControlPane(), gameEditorGround);
   }
 
   private void initGameStage(int cols, int rows) {
@@ -106,18 +106,16 @@ public class MainController {
     hbBufferSize.setAlignment(Pos.BASELINE_LEFT);
 
     hbButtons.setAlignment(Pos.BASELINE_LEFT);
-    btnAddLayer.setOnAction(e -> doAddLayer(lvLayers));
-    btnDeleteLayer.setOnAction(e -> doDeleteLayer(lvLayers));
+    btnAddLayer.setOnAction(e -> doAddLayer());
+    btnDeleteLayer.setOnAction(e -> doDeleteLayer());
 
     hbSaveLoad.setAlignment(Pos.BASELINE_LEFT);
     btnSave.setOnAction(e -> saveGameStage());
     btnLoad.setOnAction(e -> loadGameStage());
 
-    initLvLayers(lvLayers);
+    initLvLayers();
 
     btnPlay.setOnAction(e -> play());
-
-    lvLayers.setPrefHeight(120);
 
     return vBox;
   }
@@ -170,7 +168,8 @@ public class MainController {
     return fileChooser;
   }
 
-  private static void initLvLayers(ListView<EditorBoardLayer> lvLayers) {
+  private void initLvLayers() {
+    lvLayers.setPrefHeight(240);
     lvLayers.setCellFactory(lv -> new ListCell<>() {
       @Override
       protected void updateItem(EditorBoardLayer item, boolean empty) {
@@ -188,7 +187,7 @@ public class MainController {
     );
   }
 
-  private void doDeleteLayer(ListView<EditorBoardLayer> lvLayers) {
+  private void doDeleteLayer() {
     var boardLayer = lvLayers.getSelectionModel().getSelectedItem();
     if (boardLayer == null) {
       return;
@@ -201,8 +200,8 @@ public class MainController {
     lblTilesCount.setText(TILES_COUNT_PREFIX + gameStage.tilesCount());
   }
 
-  private void doAddLayer(ListView<EditorBoardLayer> lvLayers) {
-    if (this.gameEditorBoard.getBoardLayers().size() >= 5) {
+  private void doAddLayer() {
+    if (this.gameEditorBoard.getBoardLayers().size() >= 50) {
       return;
     }
     var boardLayer = this.gameEditorBoard.addLayer(this.gameStage.getStageLayers().size());
@@ -210,8 +209,8 @@ public class MainController {
 
     var prevSelected = lvLayers.getSelectionModel().getSelectedItem();
     lvLayers.getItems().add(0, boardLayer);
+    lvLayers.getSelectionModel().select(null);
     lvLayers.getSelectionModel().select(Objects.requireNonNullElse(prevSelected, boardLayer));
-    lvLayers.getSelectionModel().getSelectedItem().setActive(true);
   }
 
   private void play() {
