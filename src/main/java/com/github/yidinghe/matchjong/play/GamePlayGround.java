@@ -11,9 +11,12 @@ public class GamePlayGround extends BorderPane {
     this.gamePlay = gamePlay;
 
     var gameStage = this.gamePlay.getGameStage();
-    var gamePlayBoard = new GamePlayBoard(gameStage.getCols(), gameStage.getRows());
+    var gamePlayBoard = new GamePlayBoard(
+      gameStage.getCols(), gameStage.getRows(), gameStage.getStageLayers().size()
+    );
 
     this.setCenter(gamePlayBoard);
     this.setPadding(new Insets(20));
+    this.gamePlay.fillTiles(gamePlayBoard);
   }
 }

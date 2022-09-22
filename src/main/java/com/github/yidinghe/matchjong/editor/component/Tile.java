@@ -58,7 +58,7 @@ public class Tile extends Canvas {
 
     if (!active) {
       ColorAdjust c = new ColorAdjust();
-      c.setBrightness(-0.15);
+      c.setBrightness(-0.55);
       this.setEffect(c);
     } else {
       this.setEffect(null);
@@ -113,5 +113,19 @@ public class Tile extends Canvas {
   public boolean overlaps(int colIndex, int rowIndex) {
     return colIndex >= this.colIndex - 1 && colIndex <= this.colIndex + 1 &&
       rowIndex >= this.rowIndex - 1 && rowIndex <= this.rowIndex + 1;
+  }
+
+  public boolean overlaps(Tile t) {
+    return overlaps(t.getColIndex(), t.getRowIndex());
+  }
+
+  @Override
+  public String toString() {
+    return "Tile{" +
+      "layer=" + layer +
+      ", colIndex=" + colIndex +
+      ", rowIndex=" + rowIndex +
+      ", active=" + active +
+      '}';
   }
 }

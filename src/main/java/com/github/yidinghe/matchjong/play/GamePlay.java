@@ -62,15 +62,11 @@ public class GamePlay {
           this.tileImages.get(value)
         );
         answer.add(value);
-        addTileToBoard(tile);
+        gamePlayBoard.addTile(tile);
       });
 
     Collections.reverse(answer);
     System.out.println("解法步骤: " + answer);
-  }
-
-  private void addTileToBoard(Tile tile) {
-    // TODO: 2022/9/22
   }
 
 }

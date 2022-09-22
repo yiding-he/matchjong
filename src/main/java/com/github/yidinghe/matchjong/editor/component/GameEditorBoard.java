@@ -14,6 +14,8 @@ public class GameEditorBoard extends StackPane {
 
   public static final int CELL_HEIGHT = 20;
 
+  public static final int CELL_DEPTH = 5;
+
   private final int rows;
 
   private final int cols;
@@ -29,7 +31,7 @@ public class GameEditorBoard extends StackPane {
   private void updateSize() {
     var prefSize = new double[]{
       this.cols * CELL_WIDTH,
-      this.rows * CELL_HEIGHT + Math.max(0, (this.boardLayers.size() - 1)) * 5
+      this.rows * CELL_HEIGHT + Math.max(0, (this.boardLayers.size() - 1)) * CELL_DEPTH
     };
     this.setPrefSize(prefSize[0], prefSize[1]);
     this.setMinSize(prefSize[0], prefSize[1]);
