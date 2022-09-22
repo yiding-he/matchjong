@@ -3,10 +3,9 @@ package com.github.yidinghe.matchjong.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yidinghe.matchjong.FxApp;
 import com.github.yidinghe.matchjong.TileImages;
+import com.github.yidinghe.matchjong.editor.EditEvent;
 import com.github.yidinghe.matchjong.editor.component.EditorBoardLayer;
 import com.github.yidinghe.matchjong.editor.component.GameEditorBoard;
-import com.github.yidinghe.matchjong.editor.events.AddTileEvent;
-import com.github.yidinghe.matchjong.editor.events.DeleteTileEvent;
 import com.github.yidinghe.matchjong.editor.model.GameStage;
 import com.github.yidinghe.matchjong.editor.model.GameTileImage;
 import com.github.yidinghe.matchjong.play.PlayWindow;
@@ -61,7 +60,7 @@ public class MainController {
     this.gameStage.setMatchCount(4);
     this.gameStage.setBufferSize(13);
 
-    EventBus.on(AddTileEvent.class, e -> {
+    EventBus.on(EditEvent.AddTileEvent.class, e -> {
       var tile = e.tile();
       if (!this.gameStage.isReadOnly()) {
         this.gameStage.getLayer(tile.getLayer()).addTile(tile.getColIndex(), tile.getRowIndex());
@@ -69,7 +68,7 @@ public class MainController {
       this.lblTilesCount.setText(TILES_COUNT_PREFIX + gameStage.tilesCount());
     });
 
-    EventBus.on(DeleteTileEvent.class, e -> {
+    EventBus.on(EditEvent.DeleteTileEvent.class, e -> {
       var tile = e.tile();
       if (!this.gameStage.isReadOnly()) {
         this.gameStage.getLayer(tile.getLayer()).deleteTile(tile.getColIndex(), tile.getRowIndex());

@@ -5,9 +5,11 @@ import com.github.yidinghe.matchjong.editor.model.GameStage;
 import com.github.yidinghe.matchjong.editor.model.GameStageLayer;
 import com.github.yidinghe.matchjong.editor.model.GameStageTile;
 import com.github.yidinghe.matchjong.editor.model.GameTileImage;
+import javafx.application.Platform;
 
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GamePlay {
 
@@ -46,28 +48,29 @@ public class GamePlay {
         tilePointer = 0;
       }
     }
-    var answer = new ArrayList<>(queue.size());
 
-    this.gameStage.getStageLayers().stream()
-      .sorted(Comparator.comparing(GameStageLayer::getLayer))
-      .flatMap(layer -> {
-        var tiles = new ArrayList<>(layer.getTiles());
-        Collections.shuffle(tiles);
-        return tiles.stream().sorted(Comparator.comparing(GameStageTile::getRowIndex));
-      }).forEach(stageTile -> {
-        var pick = RANDOM.nextInt(Math.min(queue.size(), gameStage.getBufferSize()));
-        var value = queue.remove(pick);
-        var tile = new Tile(
-          value, stageTile.getLayer(),
-          stageTile.getColIndex(), stageTile.getRowIndex(),
-          this.tileImages.get(value)
-        );
-        answer.add(value);
-        gamePlayBoard.addTile(tile);
-      });
-
-    Collections.reverse(answer);
-    System.out.println("解法步骤: " + answer);
+    new Thread(() -> {
+      var counter = new AtomicInteger();
+      this.gameStage.getStageLayers().stream()
+        .sorted(Comparator.comparing(GameStageLayer::getLayer))
+        .flatMap(layer -> {
+          var tiles = new ArrayList<>(layer.getTiles());
+          Collections.shuffle(tiles);
+          return tiles.stream().sorted(Comparator.comparing(GameStageTile::getRowIndex));
+        }).forEach(stageTile -> {
+          var pick = RANDOM.nextInt(Math.min(queue.size(), gameStage.getBufferSize()));
+          var value = queue.remove(pick);
+          Platform.runLater(() -> {
+            var tile = new Tile(
+              value, stageTile.getLayer(),
+              stageTile.getColIndex(), stageTile.getRowIndex(),
+              this.tileImages.get(value)
+            );
+            gamePlayBoard.addTile(tile);
+          });
+        });
+      Platform.runLater(gamePlayBoard::updateTileActive);
+    }).start();
   }
 
 }

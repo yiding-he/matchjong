@@ -2,6 +2,7 @@ package com.github.yidinghe.matchjong.play;
 
 import com.github.yidinghe.matchjong.editor.component.GameEditorBoard;
 import com.github.yidinghe.matchjong.editor.component.Tile;
+import com.github.yidinghe.matchjong.util.EventBus;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -29,27 +30,26 @@ public class GamePlayBoard extends Pane {
   public void addTile(Tile tile) {
     tile.setLayoutX(getTileLayoutX(tile));
     tile.setLayoutY(getTileLayoutY(tile));
-    this.getChildren().add(tile);
-    this.tiles.add(tile);
     tile.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
       if (e.getButton() == MouseButton.PRIMARY) {
         this.tileClicked(tile);
       }
     });
-
-    updateTileActive();
+    this.getChildren().add(tile);
+    this.tiles.add(tile);
+    EventBus.fire(new PlayEvent.TilesCountChanged(this.tiles.size()));
   }
 
   private void tileClicked(Tile tile) {
     if (tile.isActive()) {
       this.getChildren().remove(tile);
       this.tiles.remove(tile);
-      System.out.println("Remove tile: " + tile + ", total " + this.tiles.size());
+      updateTileActive();
+      EventBus.fire(new PlayEvent.TilesCountChanged(this.tiles.size()));
     }
-    updateTileActive();
   }
 
-  private void updateTileActive() {
+  public void updateTileActive() {
     this.tiles.forEach(t -> t.setActive(this.tiles.stream().noneMatch(
       tt -> tt.getLayer() > t.getLayer() && tt.overlaps(t))
     ));

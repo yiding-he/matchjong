@@ -1,7 +1,6 @@
 package com.github.yidinghe.matchjong.editor.component;
 
-import com.github.yidinghe.matchjong.editor.events.AddTileEvent;
-import com.github.yidinghe.matchjong.editor.events.DeleteTileEvent;
+import com.github.yidinghe.matchjong.editor.EditEvent;
 import com.github.yidinghe.matchjong.util.EventBus;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -201,7 +200,7 @@ public class EditorBoardLayer extends StackPane {
   private void removeTile(Tile t) {
     this.tiles.remove(t);
     this.getChildren().remove(t);
-    EventBus.fire(new DeleteTileEvent(t));
+    EventBus.fire(new EditEvent.DeleteTileEvent(t));
   }
 
   public void addTile(Tile tile) {
@@ -212,7 +211,7 @@ public class EditorBoardLayer extends StackPane {
     this.getChildren().add(tile);
     this.tiles.add(tile);
     rearrangeZIndex();
-    EventBus.fire(new AddTileEvent(tile));
+    EventBus.fire(new EditEvent.AddTileEvent(tile));
   }
 
   private void rearrangeZIndex() {

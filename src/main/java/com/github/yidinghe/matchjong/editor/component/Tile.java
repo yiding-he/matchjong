@@ -1,5 +1,6 @@
 package com.github.yidinghe.matchjong.editor.component;
 
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.ColorAdjust;
@@ -55,8 +56,9 @@ public class Tile extends Canvas {
 
     var shadowColor = borderColor.darker();
     context.setStroke(shadowColor);
-    context.moveTo(border * 2, tileHeight);
-    context.lineTo(tileWidth - border * 2, tileHeight);
+    context.moveTo(0.5, tileHeight - border * 2);
+    context.arcTo(border * 0.8284, tileHeight - border * 0.8284, border * 2, tileHeight - 0.5, border * 2);
+    context.lineTo(tileWidth - border * 2, tileHeight - 0.5);
     context.arcTo(tileWidth - border * 0.8284, tileHeight - border * 0.8284, tileWidth, tileHeight - border * 2, border * 2);
     context.lineTo(tileWidth, border * 2);
     context.stroke();
@@ -92,8 +94,10 @@ public class Tile extends Canvas {
   }
 
   public void setActive(boolean active) {
+    if (this.active != active) {
+      Platform.runLater(this::draw);
+    }
     this.active = active;
-    draw();
   }
 
   public boolean isActive() {
