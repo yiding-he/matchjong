@@ -1,6 +1,5 @@
 package com.github.yidinghe.matchjong.play;
 
-import com.github.yidinghe.matchjong.editor.component.EditorBoardLayer;
 import com.github.yidinghe.matchjong.editor.component.Tile;
 import com.github.yidinghe.matchjong.editor.model.GameStage;
 import com.github.yidinghe.matchjong.editor.model.GameStageLayer;
@@ -48,8 +47,6 @@ public class GamePlay {
     }
     var answer = new ArrayList<>(queue.size());
 
-    var boardLayers = new ArrayList<>(gamePlayBoard.getBoardLayers());
-    boardLayers.sort(Comparator.comparing(EditorBoardLayer::getLayer));
     this.gameStage.getStageLayers().stream()
       .sorted(Comparator.comparing(GameStageLayer::getLayer))
       .flatMap(layer -> {
@@ -65,26 +62,15 @@ public class GamePlay {
           this.tileImages.get(value)
         );
         answer.add(value);
-        boardLayers.get(stageTile.getLayer()).addTile(tile);
+        addTileToBoard(tile);
       });
 
     Collections.reverse(answer);
     System.out.println("解法步骤: " + answer);
   }
 
-  public void initTileStatus(GamePlayBoard gamePlayBoard) {
-    var boardLayers = new ArrayList<>(gamePlayBoard.getBoardLayers());
-    boardLayers.sort(Comparator.comparing(EditorBoardLayer::getLayer));
-    var topLayer = boardLayers.get(boardLayers.size() - 1).getLayer();
-    boardLayers.forEach(layer -> {
-      layer.getTiles().forEach(t -> {
-        if (t.getLayer() == topLayer) {
-          t.setActive(true);
-        } else {
-          var upperLayer = boardLayers.get(t.getLayer() + 1);
-          t.setActive(!upperLayer.hasOverlap(t.getColIndex(), t.getRowIndex()));
-        }
-      });
-    });
+  private void addTileToBoard(Tile tile) {
+    // TODO: 2022/9/22
   }
+
 }
