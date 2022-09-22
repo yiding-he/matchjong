@@ -7,6 +7,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
@@ -16,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -209,7 +211,12 @@ public class EditorBoardLayer extends StackPane {
     tile.setLayoutY(cellPosition[3]);
     this.getChildren().add(tile);
     this.tiles.add(tile);
+    rearrangeZIndex();
     EventBus.fire(new AddTileEvent(tile));
+  }
+
+  private void rearrangeZIndex() {
+    this.tiles.stream().sorted(Comparator.comparing(Tile::getRowIndex)).forEach(Node::toFront);
   }
 
   private void createTile(int layer, int[] cellPosition) {

@@ -37,7 +37,7 @@ public class Tile extends Canvas {
     this.borderColor = borderColor;
 
     var tileWidth = GameEditorBoard.CELL_WIDTH * 2;
-    var tileHeight = GameEditorBoard.CELL_HEIGHT * 2;
+    var tileHeight = GameEditorBoard.CELL_HEIGHT * 2 + GameEditorBoard.CELL_DEPTH;
     this.setWidth(tileWidth);
     this.setHeight(tileHeight);
 
@@ -48,17 +48,27 @@ public class Tile extends Canvas {
     var tileWidth = getWidth();
     var tileHeight = getHeight();
     var context = getGraphicsContext2D();
+    var round = 5;
+    var border = 2;
     context.setFill(borderColor);
-    context.fillRoundRect(0, 0, tileWidth, tileHeight, 10, 10);
+    context.fillRoundRect(0, 0, tileWidth, tileHeight, round * 2, round * 2);
+
+    var shadowColor = borderColor.darker();
+    context.setStroke(shadowColor);
+    context.moveTo(border * 2, tileHeight);
+    context.lineTo(tileWidth - border * 2, tileHeight);
+    context.arcTo(tileWidth - border * 0.8284, tileHeight - border * 0.8284, tileWidth, tileHeight - border * 2, border * 2);
+    context.lineTo(tileWidth, border * 2);
+    context.stroke();
 
     context.setFill(Color.WHITE);
-    context.fillRoundRect(1, 1, tileWidth - 2, tileHeight - 5, 10, 10);
+    context.fillRoundRect(border, border, tileWidth - 2 * border, GameEditorBoard.CELL_HEIGHT * 2 - 2 * border, round, round);
 
     drawTileImage(context);
 
     if (!active) {
       ColorAdjust c = new ColorAdjust();
-      c.setBrightness(-0.55);
+      c.setBrightness(-0.15);
       this.setEffect(c);
     } else {
       this.setEffect(null);
@@ -72,7 +82,8 @@ public class Tile extends Canvas {
       var imgRatio = image.getWidth() / image.getHeight();
       var tileRatio = tileWidth / tileHeight;
       var scale = imgRatio > tileRatio ? (tileWidth / image.getWidth()) : (tileHeight / image.getHeight());
-      var imgSize = new double[]{image.getWidth() * scale - 2, image.getHeight() * scale - 2};
+      var padding = Math.max(2, tileWidth / 8.0);
+      var imgSize = new double[]{image.getWidth() * scale - padding * 2, image.getHeight() * scale - padding * 2};
       var imgPos = new double[]{(tileWidth - imgSize[0]) / 2.0, (tileHeight - imgSize[1]) / 2.0};
 
       context.setImageSmoothing(true);

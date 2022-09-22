@@ -38,7 +38,6 @@ public class GamePlayBoard extends Pane {
     });
 
     updateTileActive();
-    System.out.println("Add tile: " + tile + ", total " + this.tiles.size());
   }
 
   private void tileClicked(Tile tile) {

@@ -10,11 +10,11 @@ import java.util.List;
 
 public class GameEditorBoard extends StackPane {
 
-  public static final int CELL_WIDTH = 15;
+  public static final int CELL_WIDTH = 20;
 
-  public static final int CELL_HEIGHT = 20;
+  public static final int CELL_HEIGHT = 25;
 
-  public static final int CELL_DEPTH = 5;
+  public static final int CELL_DEPTH = 10;
 
   private final int rows;
 
@@ -53,7 +53,7 @@ public class GameEditorBoard extends StackPane {
   }
 
   private int layerLayoutY(int layer) {
-    return (boardLayers.size() - layer - 1) * 5;
+    return (boardLayers.size() - layer - 1) * CELL_DEPTH;
   }
 
   public int getRows() {

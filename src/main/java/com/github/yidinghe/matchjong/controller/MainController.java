@@ -44,7 +44,7 @@ public class MainController {
 
   public void initialize() {
     var cols = 40;
-    var rows = 30;
+    var rows = 25;
 
     initGameStage(cols, rows);
     initEditorBoard(cols, rows);

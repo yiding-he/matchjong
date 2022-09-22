@@ -3,6 +3,7 @@ package com.github.yidinghe.matchjong.play;
 import com.github.yidinghe.matchjong.editor.component.Tile;
 import com.github.yidinghe.matchjong.editor.model.GameStage;
 import com.github.yidinghe.matchjong.editor.model.GameStageLayer;
+import com.github.yidinghe.matchjong.editor.model.GameStageTile;
 import com.github.yidinghe.matchjong.editor.model.GameTileImage;
 
 import java.security.SecureRandom;
@@ -52,7 +53,7 @@ public class GamePlay {
       .flatMap(layer -> {
         var tiles = new ArrayList<>(layer.getTiles());
         Collections.shuffle(tiles);
-        return tiles.stream();
+        return tiles.stream().sorted(Comparator.comparing(GameStageTile::getRowIndex));
       }).forEach(stageTile -> {
         var pick = RANDOM.nextInt(Math.min(queue.size(), gameStage.getBufferSize()));
         var value = queue.remove(pick);
