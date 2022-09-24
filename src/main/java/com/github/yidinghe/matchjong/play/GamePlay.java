@@ -4,7 +4,7 @@ import com.github.yidinghe.matchjong.editor.component.Tile;
 import com.github.yidinghe.matchjong.editor.model.GameStage;
 import com.github.yidinghe.matchjong.editor.model.GameStageLayer;
 import com.github.yidinghe.matchjong.editor.model.GameStageTile;
-import com.github.yidinghe.matchjong.editor.model.GameTileImage;
+import com.github.yidinghe.matchjong.play.model.GameTileImage;
 import javafx.application.Platform;
 
 import java.security.SecureRandom;
@@ -19,9 +19,9 @@ public class GamePlay {
 
   private final List<GameTileImage> tileImages;
 
-  public GamePlay(GameStage gameStage, List<GameTileImage> tileImages) {
+  public GamePlay(GameStage gameStage) {
     this.gameStage = gameStage;
-    this.tileImages = tileImages;
+    this.tileImages = GameTileImage.parseGameStage(gameStage);
   }
 
   public GameStage getGameStage() {

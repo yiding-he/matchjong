@@ -11,7 +11,7 @@ public class GameStage {
 
   private List<GameStageLayer> stageLayers = new ArrayList<>();
 
-  private List<String> tileImages = new ArrayList<>();
+  private GameTilePack tilePack;
 
   private int matchCount = 3;
 
@@ -27,10 +27,6 @@ public class GameStage {
   public GameStage(int cols, int rows) {
     this.cols = cols;
     this.rows = rows;
-  }
-
-  public List<String> getTileImages() {
-    return tileImages;
   }
 
   public boolean isReadOnly() {
@@ -65,8 +61,12 @@ public class GameStage {
     this.stageLayers = stageLayers;
   }
 
-  public void setTileImages(List<String> tileImages) {
-    this.tileImages = tileImages;
+  public GameTilePack getTilePack() {
+    return tilePack;
+  }
+
+  public void setTilePack(GameTilePack tilePack) {
+    this.tilePack = tilePack;
   }
 
   public int getMatchCount() {
@@ -122,6 +122,10 @@ public class GameStage {
 
     if (bufferSize < matchCount) {
       return "缓冲区域大小不能小于消除个数";
+    }
+
+    if (tilePack == null) {
+      return "请选择或添加图标包";
     }
 
     return null;
