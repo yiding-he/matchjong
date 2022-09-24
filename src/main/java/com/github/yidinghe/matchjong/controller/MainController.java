@@ -288,8 +288,8 @@ public class MainController {
       return;
     }
 
-    PlayWindow playWindow = new PlayWindow();
-    playWindow.start(this.gameStage);
+    PlayWindow playWindow = new PlayWindow(gameStage);
+    playWindow.start();
   }
 
   private boolean validateGameStage() {

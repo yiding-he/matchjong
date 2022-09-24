@@ -4,9 +4,23 @@ import com.github.yidinghe.matchjong.editor.component.Tile;
 
 public class PlayEvent {
 
-  public record DeleteTileEvent(Tile tile) {
+  private PlayEvent() {
+
+  }
+
+  public record TileBuffered(Tile tile) {
+
   }
 
   public record TilesCountChanged(int count) {
+
+  }
+
+  public record GameOver() {
+
+  }
+
+  public record Win() {
+
   }
 }

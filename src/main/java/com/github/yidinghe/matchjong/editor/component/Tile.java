@@ -11,19 +11,21 @@ public class Tile extends Canvas {
 
   public static final Color BORDER_COLOR = Color.web("#66AAFF");
 
+  public static final int BLANK = -1;
+
   private final int layer;
 
   private final int colIndex;
 
   private final int rowIndex;
 
-  private final int value;
-
-  private final Image image;
-
   private final Color borderColor;
 
   private boolean active;
+
+  private Image image;
+
+  private int value;
 
   public Tile(int value, int layer, int colIndex, int rowIndex, Image image) {
     this(value, layer, colIndex, rowIndex, image, BORDER_COLOR);
@@ -120,6 +122,16 @@ public class Tile extends Canvas {
     return rowIndex;
   }
 
+  public Image getImage() {
+    return image;
+  }
+
+  public void update(Image image, int value) {
+    this.image = image;
+    this.value = value;
+    draw();
+  }
+
   public boolean covers(int colIndex, int rowIndex) {
     return (this.colIndex == colIndex || this.colIndex + 1 == colIndex) &&
       (this.rowIndex == rowIndex || this.rowIndex + 1 == rowIndex);
@@ -132,6 +144,10 @@ public class Tile extends Canvas {
 
   public boolean overlaps(Tile t) {
     return overlaps(t.getColIndex(), t.getRowIndex());
+  }
+
+  public boolean isBlank() {
+    return this.value == BLANK;
   }
 
   @Override

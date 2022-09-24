@@ -10,14 +10,24 @@ public class PlayWindow extends Stage {
 
   public static PlayWindow INSTANCE;
 
-  private GamePlay gamePlay;
+  private final GamePlay gamePlay;
 
-  public void start(GameStage gameStage) {
-    INSTANCE = this;
-    var tilesCount = gameStage.tilesCount();
-    EventBus.on(PlayEvent.TilesCountChanged.class, e -> setTitle(e.count() + "/" + tilesCount));
+  private final GameStage gameStage;
 
+  static {
+    EventBus.on(PlayEvent.TilesCountChanged.class, e -> {
+      INSTANCE.setTitle(e.count() + "/" + INSTANCE.gameStage.tilesCount());
+
+    });
+  }
+
+  public PlayWindow(GameStage gameStage) {
+    this.gameStage = gameStage;
     this.gamePlay = new GamePlay(gameStage);
+    INSTANCE = this;
+  }
+
+  public void start() {
     this.initModality(Modality.APPLICATION_MODAL);
     this.setScene(new Scene(new GamePlayGround(gamePlay)));
     this.show();

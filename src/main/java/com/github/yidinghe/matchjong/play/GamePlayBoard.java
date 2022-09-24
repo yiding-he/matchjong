@@ -44,13 +44,16 @@ public class GamePlayBoard extends Pane {
     if (tile.isActive()) {
       this.getChildren().remove(tile);
       this.tiles.remove(tile);
-      updateTileActive();
+      updateTileActive(tile);
+      EventBus.fire(new PlayEvent.TileBuffered(tile));
       EventBus.fire(new PlayEvent.TilesCountChanged(this.tiles.size()));
     }
   }
 
-  public void updateTileActive() {
-    this.tiles.forEach(t -> t.setActive(this.tiles.stream().noneMatch(
+  public void updateTileActive(Tile removed) {
+    this.tiles.stream().filter(
+      t -> removed == null || t.overlaps(removed)
+    ).forEach(t -> t.setActive(this.tiles.stream().noneMatch(
       tt -> tt.getLayer() > t.getLayer() && tt.overlaps(t))
     ));
   }
