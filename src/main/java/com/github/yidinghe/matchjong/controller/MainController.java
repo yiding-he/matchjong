@@ -69,6 +69,12 @@ public class MainController {
 
     this.root.setBackground(new Background(new BackgroundFill(Color.web("#EEEEEE"), null, null)));
     this.root.getChildren().addAll(createControlPane(), gameEditorGround);
+
+    try {
+      loadGameStage(new String(MainController.class.getResourceAsStream("/sample.json").readAllBytes()));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   private void initDefaultTilePack() {
@@ -182,32 +188,34 @@ public class MainController {
       return;
     }
     try {
-      gameStage = OBJECT_MAPPER.reader()
-        .readValue(Files.readString(file.toPath()), GameStage.class);
-
-      gameStage.setReadOnly(true);
-      gameEditorBoard.loadGameStage(gameStage);
-      gameStage.setReadOnly(false);
-
-      lvLayers.getItems().setAll(gameEditorBoard.getBoardLayers());
-      Collections.reverse(lvLayers.getItems());
-      lvLayers.getSelectionModel().select(0);
-
-      spMatchCount.getValueFactory().setValue(gameStage.getMatchCount());
-      spBufferSize.getValueFactory().setValue(gameStage.getBufferSize());
-
-      var tilePack = gameStage.getTilePack();
-      tilePack.setName(INNER_PACK);
-      var tilePacks = lvTilePacks.getItems();
-      if (!tilePacks.isEmpty() && tilePacks.get(0).getName().equals(INNER_PACK)) {
-        tilePacks.remove(0);
-      }
-      tilePacks.add(0, tilePack);
-      lvTilePacks.getSelectionModel().select(0);
-
+      var json = Files.readString(file.toPath());
+      loadGameStage(json);
     } catch (IOException ex) {
       throw new RuntimeException(ex);
     }
+  }
+
+  private void loadGameStage(String json) throws IOException {
+    gameStage = OBJECT_MAPPER.reader().readValue(json, GameStage.class);
+    gameStage.setReadOnly(true);
+    gameEditorBoard.loadGameStage(gameStage);
+    gameStage.setReadOnly(false);
+
+    lvLayers.getItems().setAll(gameEditorBoard.getBoardLayers());
+    Collections.reverse(lvLayers.getItems());
+    lvLayers.getSelectionModel().select(0);
+
+    spMatchCount.getValueFactory().setValue(gameStage.getMatchCount());
+    spBufferSize.getValueFactory().setValue(gameStage.getBufferSize());
+
+    var tilePack = gameStage.getTilePack();
+    tilePack.setName(INNER_PACK);
+    var tilePacks = lvTilePacks.getItems();
+    if (!tilePacks.isEmpty() && tilePacks.get(0).getName().equals(INNER_PACK)) {
+      tilePacks.remove(0);
+    }
+    tilePacks.add(0, tilePack);
+    lvTilePacks.getSelectionModel().select(0);
   }
 
   private void saveGameStage() {

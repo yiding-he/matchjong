@@ -38,6 +38,7 @@ public class GamePlayGround extends BorderPane {
 
     this.setCenter(gamePlayBoard);
     this.setPadding(new Insets(20));
+    GameInitializer.initialize(this.gamePlay, this.gamePlayBoard);
     this.gamePlay.fillTiles(gamePlayBoard);
 
     hbBuffers = new HBox();

@@ -41,6 +41,10 @@ public class GamePlay {
     return gameStage;
   }
 
+  public List<GameTileImage> getTileImages() {
+    return tileImages;
+  }
+
   public List<Tile> getBufferTiles() {
     return this.bufferTiles;
   }
@@ -104,7 +108,7 @@ public class GamePlay {
           Collections.shuffle(tiles);
           return tiles.stream().sorted(Comparator.comparing(GameStageTile::getRowIndex));
         }).forEach(stageTile -> {
-          var pick = RANDOM.nextInt(Math.min(queue.size(), gameStage.getBufferSize()));
+          var pick = RANDOM.nextInt(Math.min(queue.size(), gameStage.getBufferSize() * 2));
           var value = queue.remove(pick);
           Platform.runLater(() -> {
             var tile = new Tile(
