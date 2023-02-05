@@ -1,12 +1,15 @@
 package com.github.yidinghe.matchjong.editor.model;
 
+/**
+ * 地图中的棋子，包含其坐标位置
+ */
 public class GameStageTile {
 
-  private int layer;
+  private int layer;      // 所在的层
 
-  private int colIndex;
+  private int colIndex;   // 所在的列
 
-  private int rowIndex;
+  private int rowIndex;   // 所在的行
 
   public GameStageTile() {
   }
