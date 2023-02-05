@@ -156,8 +156,10 @@ public class MainController {
     var btnSave = new Button("保存关卡");
     var btnLoad = new Button("加载关卡");
     var hbSaveLoad = new HBox(5, btnSave, btnLoad, btnPlay);
+    var lbTip = new Label("鼠标在棋盘中左键点击放置麻将块，右键点击删除");
+    lbTip.setTextFill(Color.web("999999"));
 
-    var vBox = new VBox(10, hbButtons, lvLayers, hbMatchCount, hbBufferSize, vbTilePacks, hbSaveLoad);
+    var vBox = new VBox(10, hbButtons, lbTip, lvLayers, hbMatchCount, hbBufferSize, vbTilePacks, hbSaveLoad);
 
     spMatchCount.setPrefWidth(70);
     spBufferSize.setPrefWidth(70);
