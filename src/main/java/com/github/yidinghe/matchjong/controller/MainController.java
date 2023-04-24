@@ -56,11 +56,11 @@ public class MainController {
 
   private Spinner<Integer> spBufferSize;
 
-  private ListView<EditorBoardLayer> lvLayers = new ListView<>();
+  private final ListView<EditorBoardLayer> lvLayers = new ListView<>();
 
   private Label lblTilesCount;
 
-  private ListView<GameTilePack> lvTilePacks = new ListView<>();
+  private final ListView<GameTilePack> lvTilePacks = new ListView<>();
 
   public void initialize() {
 
@@ -187,10 +187,8 @@ public class MainController {
     var hbBufferSize = new HBox(5, new Label("缓冲区域大小："), spBufferSize);
     var lblTilePacks = new Label("图标包：");
     setLvCellFactory(lvTilePacks, gameTilePack -> gameTilePack.getName() + "(" + gameTilePack.getTileImages().size() + " tiles)");
-    var btnAddTilePack = new Button("+");
-    var btnDelTilePack = new Button("-");
-    var hbTilePackButtons = new HBox(5, btnAddTilePack, btnDelTilePack);
-    var vbTilePacks = new VBox(3, lblTilePacks, lvTilePacks, hbTilePackButtons);
+    var lblTilePackDesc = new Label("自定义图标包请放到进程当前目录的 tiles/ 子目录下");
+    var vbTilePacks = new VBox(3, lblTilePacks, lvTilePacks, lblTilePackDesc);
     var btnSave = new Button("保存关卡");
     var btnLoad = new Button("加载关卡");
     var hbSaveLoad = new HBox(5, btnSave, btnLoad, btnPlay);
