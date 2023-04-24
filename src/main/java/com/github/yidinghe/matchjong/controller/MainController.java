@@ -63,13 +63,19 @@ public class MainController {
     initGameStage(cols, rows);
     initEditorBoard(cols, rows);
     initDefaultTilePack();
+    scanTilePacks();
 
     var gameEditorGround = new ScrollPane(gameEditorBoard);
     HBox.setHgrow(gameEditorGround, Priority.ALWAYS);
 
-    this.root.setBackground(new Background(new BackgroundFill(Color.web("#EEEEEE"), null, null)));
-    this.root.getChildren().addAll(createControlPane(), gameEditorGround);
+    var mainPane = new VBox(5,
+      gameEditorGround, new Label("编辑方法：鼠标左键点击添加，右键点击删除")
+    );
 
+    this.root.setBackground(new Background(new BackgroundFill(Color.web("#EEEEEE"), null, null)));
+    this.root.getChildren().addAll(createControlPane(), mainPane);
+
+    // 加载示例关卡
     try {
       loadGameStage(new String(MainController.class.getResourceAsStream("/sample.json").readAllBytes()));
     } catch (Exception e) {
@@ -85,6 +91,29 @@ public class MainController {
       }
     } catch (IOException e) {
       e.printStackTrace();
+    }
+  }
+
+  private void scanTilePacks() {
+    var tilesPackDir = Path.of("tiles");
+    if (Files.exists(tilesPackDir)) {
+      try (var children = Files.list(tilesPackDir)) {
+        children.filter(
+          p -> {
+            var fileName = p.getFileName().toString();
+            return !fileName.equals("default.zip") && fileName.endsWith(".zip");
+          }
+        ).forEach(p -> {
+          try {
+            GameTilePack gameTilePack = readTilePack(p);
+            lvTilePacks.getItems().add(gameTilePack);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        });
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
   }
 
