@@ -8,12 +8,25 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * 棋盘编辑界面，包含多个层
+ */
 public class GameEditorBoard extends StackPane {
 
+  /**
+   * 棋子宽度，目前不支持自定义棋子显示大小
+   */
   public static final int CELL_WIDTH = 20;
 
+  /**
+   * 棋子高度，目前不支持自定义棋子显示大小
+   */
   public static final int CELL_HEIGHT = 25;
 
+  /**
+   * 层高，决定布局摆放的错位程度。
+   * 棋子渲染时显示出来的厚度则是按棋子本身大小比例计算的
+   */
   public static final int CELL_DEPTH = 10;
 
   private final int rows;

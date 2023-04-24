@@ -36,6 +36,10 @@ public class MainController {
 
   public static final String INNER_PACK = "关卡自带";
 
+  // 常量：纯白背景
+  public static final Background WHITE_BACKGROUND =
+    new Background(new BackgroundFill(Color.WHITE, null, null));
+
   static {
     OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
@@ -43,6 +47,8 @@ public class MainController {
   public HBox root;
 
   private GameStage gameStage;
+
+  private ScrollPane gameEditorGround;
 
   private GameEditorBoard gameEditorBoard;
 
@@ -57,27 +63,36 @@ public class MainController {
   private ListView<GameTilePack> lvTilePacks = new ListView<>();
 
   public void initialize() {
+
+    // 棋盘的列数和行数。现在只实现了固定的大小
     var cols = 40;
     var rows = 25;
 
-    initGameStage(cols, rows);
-    initEditorBoard(cols, rows);
+    initGameEventHandler();
+
+    // 读取默认的图标包供用户使用
     initDefaultTilePack();
     scanTilePacks();
 
-    var gameEditorGround = new ScrollPane(gameEditorBoard);
+    // 初始化棋盘容器控件
+    gameEditorGround = new ScrollPane();
     HBox.setHgrow(gameEditorGround, Priority.ALWAYS);
 
     var mainPane = new VBox(5,
       gameEditorGround, new Label("编辑方法：鼠标左键点击添加，右键点击删除")
     );
 
+    // 初始化主界面布局
     this.root.setBackground(new Background(new BackgroundFill(Color.web("#EEEEEE"), null, null)));
     this.root.getChildren().addAll(createControlPane(), mainPane);
 
     // 加载示例关卡
     try {
-      loadGameStage(new String(MainController.class.getResourceAsStream("/sample.json").readAllBytes()));
+      var sampleStageJson = new String(Objects.requireNonNull(
+        MainController.class.getResourceAsStream("/sample.json")).readAllBytes());
+
+      var sampleStage = parseGameStage(sampleStageJson);
+      loadGameStage(sampleStage);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -139,15 +154,14 @@ public class MainController {
     return p;
   }
 
-  private void initGameStage(int cols, int rows) {
-    this.gameStage = new GameStage(cols, rows);
-    this.gameStage.setMatchCount(4);
-    this.gameStage.setBufferSize(13);
-
+  /**
+   * 初始化游戏模型
+   */
+  private void initGameEventHandler() {
     EventBus.on(EditEvent.AddTileEvent.class, e -> {
       var tile = e.tile();
       if (!this.gameStage.isReadOnly()) {
-        this.gameStage.getLayer(tile.getLayer()).addTile(tile.getColIndex(), tile.getRowIndex());
+        this.gameStage.getOrCreateLayer(tile.getLayer()).addTile(tile.getColIndex(), tile.getRowIndex());
       }
       this.lblTilesCount.setText(TILES_COUNT_PREFIX + gameStage.tilesCount());
     });
@@ -155,15 +169,10 @@ public class MainController {
     EventBus.on(EditEvent.DeleteTileEvent.class, e -> {
       var tile = e.tile();
       if (!this.gameStage.isReadOnly()) {
-        this.gameStage.getLayer(tile.getLayer()).deleteTile(tile.getColIndex(), tile.getRowIndex());
+        this.gameStage.getOrCreateLayer(tile.getLayer()).deleteTile(tile.getColIndex(), tile.getRowIndex());
       }
       this.lblTilesCount.setText(TILES_COUNT_PREFIX + gameStage.tilesCount());
     });
-  }
-
-  private void initEditorBoard(int cols, int rows) {
-    this.gameEditorBoard = new GameEditorBoard(cols, rows);
-    this.gameEditorBoard.setBackground(new Background(new BackgroundFill(Color.web("#FFFFFF"), null, null)));
   }
 
   private VBox createControlPane() {
@@ -224,12 +233,26 @@ public class MainController {
     }
   }
 
+  private GameStage parseGameStage(String json) throws IOException {
+    return OBJECT_MAPPER.reader().readValue(json, GameStage.class);
+  }
+
   private void loadGameStage(String json) throws IOException {
-    gameStage = OBJECT_MAPPER.reader().readValue(json, GameStage.class);
+    loadGameStage(parseGameStage(json));
+  }
+
+  private void loadGameStage(GameStage gameStageInstance) {
+    gameStage = gameStageInstance;
+
+    // 初始化棋盘并加载关卡内容
     gameStage.setReadOnly(true);
+    gameEditorBoard = new GameEditorBoard(gameStage.getCols(), gameStage.getRows());
+    gameEditorBoard.setBackground(WHITE_BACKGROUND);
     gameEditorBoard.loadGameStage(gameStage);
+    gameEditorGround.setContent(gameEditorBoard);
     gameStage.setReadOnly(false);
 
+    // 根据关卡内容初始化左边的编辑界面
     lvLayers.getItems().setAll(gameEditorBoard.getBoardLayers());
     Collections.reverse(lvLayers.getItems());
     lvLayers.getSelectionModel().select(0);
@@ -237,16 +260,22 @@ public class MainController {
     spMatchCount.getValueFactory().setValue(gameStage.getMatchCount());
     spBufferSize.getValueFactory().setValue(gameStage.getBufferSize());
 
+    // 加载关卡自带的图标包；
+    // 有可能的话，替换当前图标包列表中的“关卡自带”项
+    // 注意“关卡自带”的图标包总是放在列表的第一个位置
     var tilePack = gameStage.getTilePack();
     tilePack.setName(INNER_PACK);
-    var tilePacks = lvTilePacks.getItems();
-    if (!tilePacks.isEmpty() && tilePacks.get(0).getName().equals(INNER_PACK)) {
-      tilePacks.remove(0);
+    var availableTilePackList = lvTilePacks.getItems();
+    if (!availableTilePackList.isEmpty() && availableTilePackList.get(0).getName().equals(INNER_PACK)) {
+      availableTilePackList.remove(0);
     }
-    tilePacks.add(0, tilePack);
+    availableTilePackList.add(0, tilePack);
     lvTilePacks.getSelectionModel().select(0);
   }
 
+  /**
+   * 保存关卡
+   */
   private void saveGameStage() {
     prepareGameStage();
     if (!validateGameStage()) {
@@ -278,6 +307,9 @@ public class MainController {
     );
   }
 
+  /**
+   * 封装 ListView 控件相关方法
+   */
   private static <T> void setLvCellFactory(ListView<T> lv, Function<T, String> toString) {
     lv.setCellFactory(__lv -> new ListCell<>() {
       @Override
@@ -339,6 +371,9 @@ public class MainController {
     return valid;
   }
 
+  /**
+   * 将关卡设置和棋盘布局更新到 GameStage 对象中
+   */
   private void prepareGameStage() {
     gameStage.setMatchCount(spMatchCount.getValue());
     gameStage.setBufferSize(spBufferSize.getValue());

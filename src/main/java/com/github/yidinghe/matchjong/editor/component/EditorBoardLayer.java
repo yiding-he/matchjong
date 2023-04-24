@@ -219,7 +219,7 @@ public class EditorBoardLayer extends StackPane {
   }
 
   private void createTile(int layer, int[] cellPosition) {
-    Tile tile = new Tile(-1, layer, cellPosition[0], cellPosition[1], null, Tile.BORDER_COLOR);
+    Tile tile = new Tile(-1, layer, cellPosition[0], cellPosition[1], null, Tile.DEFAULT_BORDER_COLOR);
     tile.setActive(true);
     addTile(tile);
   }

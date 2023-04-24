@@ -10,6 +10,9 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 棋子图案，包含了图片原始内容
+ */
 public class GameTileImage extends Image {
 
   public static List<GameTileImage> parseGameStage(GameStage gameStage) {
@@ -28,6 +31,9 @@ public class GameTileImage extends Image {
     }
   }
 
+  /**
+   * 图片原始内容
+   */
   private final byte[] rawData;
 
   private GameTileImage(InputStream is, byte[] rawData) {
